@@ -19,8 +19,9 @@ use actix_identity::IdentityMiddleware;
 use actix_session::storage::RedisSessionStore;
 use actix_session::SessionMiddleware;
 use actix_web::cookie::Key;
-use actix_web::middleware::NormalizePath;
+use actix_web::middleware::{Logger, NormalizePath};
 use actix_web::{dev::Server, web, web::Data, App, HttpResponse, HttpServer, Responder};
+use actix_web_lab::middleware::TrustedProxies;
 use anyhow::{Context, Error};
 use aws_sdk_s3::config::{Credentials, Region, SharedCredentialsProvider};
 use aws_sdk_s3::operation::create_bucket::CreateBucketError;
@@ -136,7 +137,13 @@ pub async fn run_actix_server(
   let realtime_server_actor = Supervisor::start(|_| RealtimeServerActor(realtime_server));
   let mut server = HttpServer::new(move || {
     let app = App::new()
+      .wrap(
+        TrustedProxies::new()
+          .with_trusted_addr("127.0.0.1")
+          .with_trusted_addr("::1"),
+      )
       .wrap(NormalizePath::trim())
+      .wrap(Logger::default())
        // Middleware is registered for each App, scope, or Resource and executed in opposite order as registration
       .wrap(MetricsMiddleware)
       .wrap(IdentityMiddleware::default())
