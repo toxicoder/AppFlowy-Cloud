@@ -19,12 +19,12 @@ cd AppFlowy-Cloud
 
 ## 2. Configure Your Environment
 
-AppFlowy-Cloud is configured using a `.env` file. A template is provided as `deploy.env`.
+AppFlowy-Cloud is configured using a `.env` file. A template is provided as `.env.example`.
 
 1.  **Copy the environment file:**
 
     ```bash
-    cp deploy.env .env
+    cp .env.example .env
     ```
 
 2.  **Edit the `.env` file:**
