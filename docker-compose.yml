@@ -21,3 +21,9 @@ services:
 
 volumes:
   postgres_data:
+  db-data:
+  appflowy-data:
+
+networks:
+  appflowy-net:
+    driver: bridge
