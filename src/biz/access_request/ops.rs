@@ -25,7 +25,7 @@ use uuid::Uuid;
 pub async fn create_access_request(
   pg_pool: &PgPool,
   mailer: AFCloudMailer,
-  appflowy_web_url: &str,
+  base_url: &str,
   workspace_id: Uuid,
   view_id: Uuid,
   uid: i64,
@@ -35,7 +35,7 @@ pub async fn create_access_request(
   let cloned_mailer = mailer.clone();
   let approve_url = format!(
     "{}/app/approve-request?request_id={}",
-    appflowy_web_url, request_id
+    base_url, request_id
   );
   let email = access_request.workspace.owner_email.clone();
   let recipient_name = access_request.workspace.owner_name.clone();
@@ -110,7 +110,7 @@ pub async fn approve_or_reject_access_request(
   pg_pool: &PgPool,
   workspace_access_control: Arc<dyn WorkspaceAccessControl>,
   mailer: AFCloudMailer,
-  appflowy_web_url: &str,
+  base_url: &str,
   request_id: Uuid,
   uid: i64,
   is_approved: bool,
@@ -140,7 +140,7 @@ pub async fn approve_or_reject_access_request(
     let cloned_mailer = mailer.clone();
     let launch_workspace_url = format!(
       "{}/app/{}",
-      appflowy_web_url, &access_request.workspace.workspace_id
+      base_url, &access_request.workspace.workspace_id
     );
 
     // use default icon until we have workspace icon

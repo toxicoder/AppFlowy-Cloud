@@ -137,11 +137,7 @@ pub async fn run_actix_server(
   let realtime_server_actor = Supervisor::start(|_| RealtimeServerActor(realtime_server));
   let mut server = HttpServer::new(move || {
     let app = App::new()
-      .wrap(
-        TrustedProxies::new()
-          .with_trusted_addr("127.0.0.1")
-          .with_trusted_addr("::1"),
-      )
+      .wrap(TrustedProxies::any())
       .wrap(NormalizePath::trim())
       .wrap(Logger::default())
        // Middleware is registered for each App, scope, or Resource and executed in opposite order as registration
