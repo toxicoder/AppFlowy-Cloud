@@ -360,7 +360,7 @@ pub async fn invite_workspace_members(
   inviter: &Uuid,
   workspace_id: &Uuid,
   invitations: Vec<WorkspaceMemberInvitation>,
-  appflowy_web_url: &str,
+  base_url: &str,
 ) -> Result<(), AppError> {
   let mut txn = pg_pool
     .begin()
@@ -430,7 +430,7 @@ pub async fn invite_workspace_members(
     // Generate a link such that when clicked, the user is added to the workspace.
     let accept_url = format!(
       "{}/accept-invitation?invited_id={}",
-      appflowy_web_url, invite_id
+      base_url, invite_id
     );
 
     if !invitation.skip_email_send {

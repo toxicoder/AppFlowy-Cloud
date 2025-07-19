@@ -44,18 +44,22 @@ async fn get_access_request_handler(
   Ok(Json(AppResponse::Ok().with_data(access_request)))
 }
 
+use crate::api::util::get_base_url;
+use actix_web::HttpRequest;
 async fn post_access_request_handler(
   uuid: UserUuid,
   create_access_request_params: Json<CreateAccessRequestParams>,
   state: Data<AppState>,
+  req: HttpRequest,
 ) -> Result<JsonAppResponse<AccessRequestMinimal>> {
   let uid = state.user_cache.get_user_uid(&uuid).await?;
   let workspace_id = create_access_request_params.workspace_id;
   let view_id = create_access_request_params.view_id;
+  let base_url = get_base_url(&req);
   let request_id = create_access_request(
     &state.pg_pool,
     state.mailer.clone(),
-    &state.config.appflowy_web_url,
+    &base_url,
     workspace_id,
     view_id,
     uid,
@@ -75,15 +79,17 @@ async fn post_approve_access_request_handler(
   access_request_id: web::Path<Uuid>,
   approve_access_request_params: Json<ApproveAccessRequestParams>,
   state: Data<AppState>,
+  req: HttpRequest,
 ) -> Result<JsonAppResponse<()>> {
   let uid = state.user_cache.get_user_uid(&uuid).await?;
   let access_request_id = access_request_id.into_inner();
   let is_approved = approve_access_request_params.is_approved;
+  let base_url = get_base_url(&req);
   approve_or_reject_access_request(
     &state.pg_pool,
     state.workspace_access_control.clone(),
     state.mailer.clone(),
-    &state.config.appflowy_web_url,
+    &base_url,
     access_request_id,
     uid,
     is_approved,

@@ -530,11 +530,13 @@ async fn list_workspace_handler(
 }
 
 #[instrument(skip(payload, state), err)]
+use crate::api::util::get_base_url;
 async fn post_workspace_invite_handler(
   user_uuid: UserUuid,
   workspace_id: web::Path<Uuid>,
   payload: Json<Vec<WorkspaceMemberInvitation>>,
   state: Data<AppState>,
+  req: HttpRequest,
 ) -> Result<JsonAppResponse<()>> {
   let uid = state.user_cache.get_user_uid(&user_uuid).await?;
   let workspace_id = workspace_id.into_inner();
@@ -544,13 +546,14 @@ async fn post_workspace_invite_handler(
     .await?;
 
   let invitations = payload.into_inner();
+  let base_url = get_base_url(&req);
   workspace::ops::invite_workspace_members(
     &state.mailer,
     &state.pg_pool,
     &user_uuid,
     &workspace_id,
     invitations,
-    &state.config.appflowy_web_url,
+    &base_url,
   )
   .await?;
   Ok(AppResponse::Ok().into())

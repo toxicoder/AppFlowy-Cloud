@@ -219,6 +219,13 @@ pub(crate) fn ai_model_from_header(req: &HttpRequest) -> &str {
     .unwrap_or("Default")
 }
 
+pub fn get_base_url(req: &HttpRequest) -> String {
+  let conn_info = req.connection_info();
+  let host = conn_info.host();
+  let scheme = conn_info.scheme();
+  format!("{}://{}", scheme, host)
+}
+
 #[cfg(test)]
 mod tests {
   use super::*;
