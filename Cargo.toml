@@ -146,6 +146,7 @@ llm-client.workspace = true
 async-openai.workspace = true
 appflowy-proto.workspace = true
 actix-cors = { version = "0.7.0", optional = true }
+actix-web-lab = "0.20.0"
 
 [dev-dependencies]
 flate2 = "1.0"
