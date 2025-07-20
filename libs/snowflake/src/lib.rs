@@ -60,6 +60,7 @@ impl Snowflake {
 #[cfg(test)]
 mod tests {
   use crate::Snowflake;
+  use std::time::Duration;
 
   #[test]
   fn gen_id() {
@@ -68,5 +69,22 @@ mod tests {
     let id_2 = snow_flake.next_id();
 
     assert_ne!(id_1, id_2);
+  }
+
+  #[test]
+  #[should_panic]
+  fn test_panic_when_clock_moves_backwards() {
+    let mut snow_flake = Snowflake::new(1);
+    snow_flake.last_timestamp = snow_flake.timestamp() + 100;
+    snow_flake.next_id();
+  }
+
+  #[test]
+  fn test_wait_next_millis() {
+    let mut snow_flake = Snowflake::new(1);
+    snow_flake.sequence = (1 << 12) - 1;
+    let _ = snow_flake.next_id();
+    let id = snow_flake.next_id();
+    assert_ne!(0, id);
   }
 }
